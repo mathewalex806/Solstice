@@ -7,3 +7,5 @@ services:
     image: django_image
     container_name: django_container
     command: python Solstice/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
