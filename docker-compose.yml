@@ -8,3 +8,21 @@ services:
     command: python Solstice/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres_database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
