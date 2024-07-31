@@ -9,3 +9,23 @@ Content-Type: application/json
   "email": "testuser1@example.com",
   "password": "testpassword"
 }
+
+### Test Login - POST Request with Valid Credentials
+POST http://localhost:8000/login/
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+### Test Login - POST Request with Invalid Credentials
+POST http://localhost:8000/login/
+Content-Type: application/json
+
+{
+  "username": "invalid_username",
+  "password": "invalid_password"
+}
