@@ -1,0 +1,11 @@
+### Test Signup Endpoint
+POST http://localhost:8000/signup/
+Content-Type: application/json
+
+{
+  "username": "testuser1",
+  "first_name": "Test",
+  "last_name": "User",
+  "email": "testuser1@example.com",
+  "password": "testpassword"
+}
