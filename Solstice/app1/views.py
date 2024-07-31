@@ -1,7 +1,14 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+
+@api_view(["POST","GET"])
+@permission_classes([AllowAny])
+def index(request):
+    return Response({"message":"Index url for Solstice "},status=status.HTTP_200_OK)
 
 @api_view(['POST',"GET"])
 def signup(request):

@@ -22,4 +22,7 @@ Using docker compose to start the entire service
 docker compose up
 ```
 
-Text input without rebuilding the container.
+Removing cache files
+```
+sudo find . -name "__pycache__" -exec rm -rf {} +
+```
