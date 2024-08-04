@@ -5,8 +5,9 @@ from .serializers import UserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
+from django.views.decorators.csrf import csrf_exempt
 
-
+@csrf_exempt
 @api_view(["POST","GET"])
 @permission_classes([AllowAny])
 def index(request):
