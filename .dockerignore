@@ -1,4 +1,4 @@
-venv
+venv/
 README.md
 __pycache__/
 data/
