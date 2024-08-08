@@ -26,3 +26,8 @@ Removing cache files
 ```
 sudo find . -name "__pycache__" -exec rm -rf {} +
 ```
+
+Inspecting the docker build image 
+```
+docker run -it solstice:1.0 /bin/sh
+```

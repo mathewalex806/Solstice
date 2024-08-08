@@ -2,4 +2,4 @@ venv/
 __pycache__/
 data/
 test.rest
-*.txt
+node_modules/
