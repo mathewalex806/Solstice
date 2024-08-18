@@ -11,6 +11,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - solstice_network
 
   db:
     image: postgres
@@ -26,3 +28,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - solstice_network
+
+networks:
+  solstice_network:
