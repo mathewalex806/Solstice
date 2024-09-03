@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
+from .models import Portfolio, Watchlist
+from django.contrib.auth.models import User
 
 @csrf_exempt
 @api_view(["POST","GET"])
@@ -40,3 +42,37 @@ def login(request):
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
     return Response({"message":"Get url for the login page"},status=status.HTTP_200_OK)
+
+
+## Creating Portfolio
+
+@api_view(["POST","GET"])
+@permission_classes([IsAuthenticated])
+def create_portfolio(request):
+    if request.method == "POST":
+        username  = request.user.username
+        portfolio_name = request.data["portfolio_name"]
+        try:
+            user  = User.objects.get(username = username)
+            portfolio = Portfolio.objects.create(user = user, portfolio_name = portfolio_name)
+            return Response({"message":f"Created portfolio : {portfolio_name}"}, status=status.HTTP_201_CREATED)
+        except:
+            return Response({"error":"Failed to create portfolio"},status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message":"GET url for the create portfolio route"})
+
+## Creating Watchlist
+
+@api_view(['POST','GET'])
+@permission_classes([IsAuthenticated])
+def create_watchlist(request):
+    if request.method == "POST":
+        username  = request.user.username
+        name = request.data["name"]
+        desc = request.data["description"]
+        try:
+            user  = User.objects.get(username = username)
+            watchlist = Watchlist.objects.create(user = user, name = name, description = desc)
+            return Response({"message":f"Created watchlist : {name}"}, status=status.HTTP_201_CREATED)
+        except:
+            return Response({"error":"Failed to create portfolio"},status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message":"GET url for the create portfolio route"})

@@ -5,4 +5,6 @@ urlpatterns = [
     path("",views.index, name="index"),
     path("signup/",views.signup, name="signup"),
     path("login/",views.login, name="login"),
+    path('create_portfolio/',views.create_portfolio, name="create_portflio"),
+    path('create-watchlist/',views.create_watchlist,name="create_watchlist"),
 ]
