@@ -19,3 +19,13 @@ class Watchlist(models.Model):
 
     def __str__(self):
         return f"{self.user}'s {self.name}"
+    
+
+class Company(models.Model):
+    name = models.CharField(max_length=51,blank=False, null=False)
+    sector = models.CharField(max_length=51,blank=False, null=False)
+    ticker = models.CharField(max_length=5,blank=False, null=False)
+    industry = models.CharField(max_length=51,blank=True, null=True)
+
+    def __str__(self):
+        return self.name

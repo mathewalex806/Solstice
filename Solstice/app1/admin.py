@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Portfolio, Watchlist
+from .models import Portfolio, Watchlist, Company
 from django.contrib.auth.models import User
 # Register your models here.
 
 
 admin.site.register(Portfolio)
 admin.site.register(Watchlist)
+admin.site.register(Company)

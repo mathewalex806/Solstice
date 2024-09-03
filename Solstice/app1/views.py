@@ -74,5 +74,7 @@ def create_watchlist(request):
             watchlist = Watchlist.objects.create(user = user, name = name, description = desc)
             return Response({"message":f"Created watchlist : {name}"}, status=status.HTTP_201_CREATED)
         except:
-            return Response({"error":"Failed to create portfolio"},status=status.HTTP_400_BAD_REQUEST)
-    return Response({"message":"GET url for the create portfolio route"})
+            return Response({"error":"Failed to create watchlist"},status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message":"GET url for the create watchlist route"})
+
+
