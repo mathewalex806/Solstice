@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
-from .models import Portfolio, Watchlist
+from .models import Portfolio, Watchlist, Watchlist_company, Investment, Transactions, Portfolio_performance
 from django.contrib.auth.models import User
 
 @csrf_exempt

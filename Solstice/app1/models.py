@@ -29,3 +29,35 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Watchlist_company(models.Model):
+    watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.watchlist.user} => {self.company.name}"
+    
+
+class Investment(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    purchase_price = models.DecimalField(decimal_places=3, max_digits=10,default=0.00)
+    date = models.DateTimeField(auto_now_add=True)
+
+
+class Transactions(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    transction_type = models.CharField(max_length=5)            ## USE 'BUY' or 'SELL'
+    quantity = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=3)
+    date = models.DateTimeField(auto_now_add= True)
+
+
+class Portfolio_performance(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    value = models.DecimalField(max_digits=10, decimal_places=3,default=0.00)
+    date = models.DateTimeField(auto_now_add=True)
