@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Portfolio(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="portfolios")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="portfolios")
     portfolio_name = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -12,7 +12,7 @@ class Portfolio(models.Model):
         return f"{self.user}'s {self.portfolio_name}"
     
 class Watchlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=20, blank=True, null= True)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=52, blank=True, null= True)
@@ -47,6 +47,9 @@ class Investment(models.Model):
     purchase_price = models.DecimalField(decimal_places=3, max_digits=10,default=0.00)
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.company.name}'s {self.quantity} shares"
+
 
 class Transactions(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
@@ -56,8 +59,22 @@ class Transactions(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=3)
     date = models.DateTimeField(auto_now_add= True)
 
+    def __str__(self):
+        return f"{self.transction_type} {self.quantity} shares of {self.company.name} at {self.price}"
+
 
 class Portfolio_performance(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=10, decimal_places=3,default=0.00)
     date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.portfolio.user}'s portfolio value is {self.value}"
+
+class StockPrice (models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    price = models. DecimalField(max_digits=10, decimal_places=3)
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company.name} price is {self.price}"
