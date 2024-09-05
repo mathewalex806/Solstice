@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +18,22 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+    
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ["name", "sector", "ticker", "industry"]
+
+class WatchlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Watchlist
+        fields = ["user", "name", "description", "created_at"]
+
+class WatchlistCompanyserializer(serializers.ModelSerializer):
+    company = CompanySerializer(read_only=True)
+
+    class Meta:
+        model  = Watchlist_company
+        fields = ["company", "added_on"]
+
