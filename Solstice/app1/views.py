@@ -8,6 +8,13 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from .models import Portfolio, Watchlist, Watchlist_company, Investment, Transactions, Portfolio_performance, Company
 from django.contrib.auth.models import User
+import finnhub
+import dotenv 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+finnhub_client = finnhub.Client(os.getenv("API_KEY"))
 
 @csrf_exempt
 @api_view(["POST","GET"])
@@ -135,11 +142,12 @@ def add_investment(request):
         username = request.user.username
         ticker = request.data["ticker"]
         quantity = request.data["quantity"]
-        purchase_price = request.data["purchase_price"]
+        #purchase_price = request.data["purchase_price"]
         try:
             user = User.objects.get(username = username)
             company = Company.objects.get(ticker = ticker)
             portfolio = Portfolio.objects.get(user = user)
+            purchase_price = finnhub_client.quote(ticker)["c"] * float(quantity)
             investment = Investment.objects.create(portfolio = portfolio, company = company, quantity = quantity, purchase_price = purchase_price)
             return Response({"message":f"Added investment to portfolio"}, status=status.HTTP_201_CREATED)
         except Company.DoesNotExist:
@@ -163,5 +171,4 @@ def add_investment(request):
             print(e)
             return Response({"error":"Failed to get investments"},status=status.HTTP_400_BAD_REQUEST)
         
-
 
