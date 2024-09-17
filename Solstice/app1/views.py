@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, WatchlistCompanyserializer
+from .serializers import UserSerializer, WatchlistCompanyserializer, InvestmentSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
@@ -121,3 +121,47 @@ def watchlist(request):
         except Exception as e:
             print(e)  
             return Response({"error": "Failed to get watchlist"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+##Adding investment to portfolio
+
+# Post request to add investment to portfolio
+# GET request to get all investments in portfolio
+
+@api_view(["POST","GET"])
+@permission_classes([IsAuthenticated])
+def add_investment(request):
+    if request.method == "POST":
+        username = request.user.username
+        ticker = request.data["ticker"]
+        quantity = request.data["quantity"]
+        purchase_price = request.data["purchase_price"]
+        try:
+            user = User.objects.get(username = username)
+            company = Company.objects.get(ticker = ticker)
+            portfolio = Portfolio.objects.get(user = user)
+            investment = Investment.objects.create(portfolio = portfolio, company = company, quantity = quantity, purchase_price = purchase_price)
+            return Response({"message":f"Added investment to portfolio"}, status=status.HTTP_201_CREATED)
+        except Company.DoesNotExist:
+            return Response({"error":"Company not found"},status=status.HTTP_404_NOT_FOUND)
+        except Portfolio.DoesNotExist:
+            return Response({"error":"Portfolio not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to add investment"},status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "GET":
+        username = request.user.username
+        try:
+            user = User.objects.get(username= username)
+            portfolio = Portfolio.objects.get(user = user)
+            investments = Investment.objects.filter(portfolio = portfolio)
+            serializer = InvestmentSerializer(investments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Portfolio.DoesNotExist:
+            return Response({"error":"Portfolio not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to get investments"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+

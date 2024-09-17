@@ -24,7 +24,7 @@ class Watchlist(models.Model):
 class Company(models.Model):
     name = models.CharField(max_length=51,blank=False, null=False)
     sector = models.CharField(max_length=51,blank=False, null=False)
-    ticker = models.CharField(max_length=5,blank=False, null=False)
+    ticker = models.CharField(max_length=5,blank=False, null=False, unique=True)
     industry = models.CharField(max_length=51,blank=True, null=True)
 
     def __str__(self):

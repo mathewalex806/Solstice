@@ -37,3 +37,21 @@ class WatchlistCompanyserializer(serializers.ModelSerializer):
         model  = Watchlist_company
         fields = ["company", "added_on"]
 
+class PortfolioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Portfolio
+        fields = ["user", "portfolio_name"]
+
+
+class ShortendCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ["name", "ticker"]
+
+class InvestmentSerializer(serializers.ModelSerializer):
+    company = ShortendCompanySerializer(read_only=True)
+    portfolio = PortfolioSerializer(read_only=True)
+
+    class Meta:
+        model = Investment
+        fields = ["portfolio", "company", "quantity", "purchase_price", "date"]
