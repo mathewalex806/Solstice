@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, WatchlistCompanyserializer, InvestmentSerializer
+from .serializers import UserSerializer, WatchlistCompanyserializer, InvestmentSerializer, TransactionSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
@@ -172,3 +172,50 @@ def add_investment(request):
             return Response({"error":"Failed to get investments"},status=status.HTTP_400_BAD_REQUEST)
         
 
+#Creating a transaction
+
+# Post request to add transaction to portfolio
+# GET request to get all transactions in portfolio
+
+@api_view(["POST", "GET"])
+@permission_classes([IsAuthenticated])
+def transaction(request):
+    if request.method == "POST":
+        username = request.user.username
+        ticker = request.data["ticker"]
+        quantity = request.data["quantity"]
+        transaction_type = request.data["transaction_type"]
+        try:
+            user = User.objects.get(username = username)
+            company = Company.objects.get(ticker = ticker)
+            portfolio = Portfolio.objects.get(user = user)
+            if transaction_type == "BUY":
+                price = finnhub_client.quote(ticker)["c"] * float(quantity)
+                transaction = Transactions.objects.create(portfolio = portfolio, company = company, transction_type = transaction_type, quantity = quantity, price = price)
+                return Response({"message":f"Added transaction to portfolio"}, status=status.HTTP_201_CREATED)
+            elif transaction_type == "SELL":
+                price = finnhub_client.quote(ticker)["c"] * float(quantity)
+                transaction = Transactions.objects.create(portfolio = portfolio, company = company, transction_type = transaction_type, quantity = quantity, price = price)
+                return Response({"message":f"Added transaction to portfolio"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error":"Invalid transaction type"},status=status.HTTP_400_BAD_REQUEST)
+        except Company.DoesNotExist:
+            return Response({"error":"Company not found"},status=status.HTTP_404_NOT_FOUND)
+        except Portfolio.DoesNotExist:
+            return Response({"error":"Portfolio not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to add transaction"},status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "GET":
+        username = request.user.username
+        try:
+            user = User.objects.get(username= username)
+            portfolio = Portfolio.objects.get(user = user)
+            transactions = Transactions.objects.filter(portfolio = portfolio)
+            serializer = TransactionSerializer(transactions, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Portfolio.DoesNotExist:
+            return Response({"error":"Portfolio not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to get transactions"},status=status.HTTP_400_BAD_REQUEST)

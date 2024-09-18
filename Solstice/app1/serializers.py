@@ -55,3 +55,12 @@ class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = ["portfolio", "company", "quantity", "purchase_price", "date"]
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    company = ShortendCompanySerializer(read_only=True)
+    portfolio = PortfolioSerializer(read_only=True)
+
+    class Meta:
+        model = Transactions
+        fields = ["portfolio", "company", "transction_type", "quantity", "price", "date"]

@@ -1,0 +1,20 @@
+### Signup Request
+POST http://localhost:8000/signup/
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "password": "newpassword",
+    "first_name": "New",
+    "last_name": "User",
+    "email": "newuser@example.com"
+}
+
+### Login Request
+POST http://localhost:8000/login/
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "password": "newpassword"
+}

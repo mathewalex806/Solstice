@@ -9,4 +9,5 @@ urlpatterns = [
     path('create-watchlist/',views.create_watchlist,name="create_watchlist"),
     path('watchlist/',views.watchlist,name="watchlist"),
     path('investment/', views.add_investment, name="investment"),
+    path('transactions/', views.transaction, name="transactions"),
 ]
