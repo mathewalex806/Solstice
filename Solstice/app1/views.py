@@ -100,7 +100,7 @@ def watchlist(request):
             print(watchlist)
             company = Company.objects.get(ticker=comp_ticker)   
             print(company)
-            comp_watchlist = Watchlist_company.objects.create(watchlist=watchlist, company=company)
+            comp_watchlist = Watchlist_company.objects.get_or_create(watchlist=watchlist, company=company)
             print(comp_watchlist)
 
             return Response({"message": f"Added {comp_ticker} to watchlist"}, status=status.HTTP_201_CREATED)
