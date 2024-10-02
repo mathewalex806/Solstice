@@ -93,23 +93,23 @@ def create_watchlist(request):
 def watchlist(request):
     if request.method == "POST":
         user = request.user.username
-        comp_name = request.data.get("name")  
-        print(comp_name)
+        comp_ticker = request.data.get("ticker")  
+        print(comp_ticker)
         try:
             watchlist = Watchlist.objects.get(user__username=user)
             print(watchlist)
-            company = Company.objects.get(name=comp_name)
+            company = Company.objects.get(ticker=comp_ticker)   
             print(company)
             comp_watchlist = Watchlist_company.objects.create(watchlist=watchlist, company=company)
             print(comp_watchlist)
 
-            return Response({"message": f"Added {comp_name} to watchlist"}, status=status.HTTP_201_CREATED)
+            return Response({"message": f"Added {comp_ticker} to watchlist"}, status=status.HTTP_201_CREATED)
         
         except Watchlist.DoesNotExist:
             return Response({"error": "Watchlist not found for user"}, status=status.HTTP_404_NOT_FOUND)
         
         except Company.DoesNotExist:
-            return Response({"error": f"Company {comp_name} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"Company {comp_ticker} not found"}, status=status.HTTP_404_NOT_FOUND)
         
         except Exception as e:
             print(e)  
@@ -219,3 +219,23 @@ def transaction(request):
         except Exception as e:
             print(e)
             return Response({"error":"Failed to get transactions"},status=status.HTTP_400_BAD_REQUEST)
+        
+#Populating Company table
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def populate_company_table(request):
+    if request.method == "GET":
+        companies = finnhub_client.stock_symbols('US')
+        for company in companies:
+            # Use get_or_create to avoid duplicates
+            Company.objects.get_or_create(
+                ticker=company["displaySymbol"],
+                defaults={
+                    'name': company["description"],
+                    'sector': "sector",    
+                    'industry': "industry"  
+                }
+            )
+        return Response({"message": "Populated company table"}, status=status.HTTP_200_OK)

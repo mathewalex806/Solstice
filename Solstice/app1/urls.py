@@ -10,4 +10,5 @@ urlpatterns = [
     path('watchlist/',views.watchlist,name="watchlist"),
     path('investment/', views.add_investment, name="investment"),
     path('transactions/', views.transaction, name="transactions"),
+    path('populate-company/', views.populate_company_table, name="populate_company"),
 ]
