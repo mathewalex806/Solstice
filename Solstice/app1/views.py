@@ -221,9 +221,10 @@ def transaction(request):
             return Response({"error":"Failed to get transactions"},status=status.HTTP_400_BAD_REQUEST)
         
 #Populating Company table
+# GET request to populate company table
+# POST request to add company to company table
 
-
-@api_view(["GET"])
+@api_view(["GET","POST"])
 @permission_classes([AllowAny])
 def populate_company_table(request):
     if request.method == "GET":
@@ -239,3 +240,15 @@ def populate_company_table(request):
                 }
             )
         return Response({"message": "Populated company table"}, status=status.HTTP_200_OK)
+    
+    if request.method == "POST":
+        name = request.data["name"]
+        ticker = request.data["ticker"]
+        sector = request.data["sector"]
+        industry = request.data["industry"]
+        try:
+            company = Company.objects.get_or_create(name = name, ticker = ticker, sector = sector, industry = industry)
+            return Response({"message":f"Added company to company table"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to add company"},status=status.HTTP_400_BAD_REQUEST)
