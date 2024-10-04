@@ -252,3 +252,44 @@ def populate_company_table(request):
         except Exception as e:
             print(e)
             return Response({"error":"Failed to add company"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+## Tracking portfolio performance
+
+@api_view(["GET", "POST"])
+@permission_classes([AllowAny])
+def portfolio_performance(request):
+    if request.method == "GET":
+        try:
+            users = User.objects.all()
+            for user in users:
+                try:
+                    portfolio = Portfolio.objects.get(user=user)
+                    investments = Investment.objects.filter(portfolio=portfolio)
+                    total_investment = 0
+                    total_value = 0
+
+                    # Purchase price stored in the database is the purchase price of all the stocks and not individual ones.
+                    for investment in investments:
+                        total_investment += investment.purchase_price
+                        # Fetching current value
+                        current_price = finnhub_client.quote(investment.company.ticker)['c']
+                        if current_price is not None:  
+                            total_value += current_price * investment.quantity
+
+                    portfolio_perform = Portfolio_performance(portfolio=portfolio, value=total_value)
+                    portfolio_perform.save()
+                except Portfolio.DoesNotExist:
+                    print(f"Portfolio does not exist for user: {user.username}")
+                except Exception as e:
+                    print(f"Error processing portfolio for user {user.username}: {e}")
+
+            return Response({"message": "Portfolio performance records added for users"}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            print(e)
+            return Response({"error": "Failed to add portfolio performance records"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    else:
+        return Response({"message": "POST request for the portfolio performance route is not implemented"}, status=status.HTTP_200_OK)
+

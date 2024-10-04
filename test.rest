@@ -3,11 +3,11 @@ POST http://localhost:8000/signup/
 Content-Type: application/json
 
 {
-    "username": "newuser",
+    "username": "newuser1",
     "password": "newpassword",
     "first_name": "New",
-    "last_name": "User",
-    "email": "newuser@example.com"
+    "last_name": "User1",
+    "email": "newuser1@example.com"
 }
 
 ### Login Request
@@ -15,6 +15,6 @@ POST http://localhost:8000/login/
 Content-Type: application/json
 
 {
-    "username": "newuser",
+    "username": "newuser1",
     "password": "newpassword"
 }
