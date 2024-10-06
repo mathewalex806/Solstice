@@ -7,10 +7,10 @@ def update_portfolio_performance():
         response = requests.get(url)
         if response.status_code == 200:
             print("Portfolio performance updated successfully.")
-            print(response.json())  # Print the response JSON for confirmation
+            print(response.json())  
         else:
             print(f"Failed to update portfolio performance. Status Code: {response.status_code}")
-            print(response.json())  # Print any error message returned by the API
+            print(response.json())  
     except Exception as e:
         print(f"An error occurred: {e}")
 
