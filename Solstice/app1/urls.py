@@ -12,4 +12,5 @@ urlpatterns = [
     path('transactions/', views.transaction, name="transactions"),
     path('populate-company/', views.populate_company_table, name="populate_company"),
     path('portfolio-performance/', views.portfolio_performance, name="portfolio_performance"),      ##Used by the cron job
+    path('user-portfolioPerformace/', views.portfolio_performance_user, name="user_portfolio_performance"),
 ]

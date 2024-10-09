@@ -64,3 +64,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
         fields = ["portfolio", "company", "transction_type", "quantity", "price", "date"]
+
+class PortfolioPerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Portfolio_performance
+        fields = ["value", "date"]

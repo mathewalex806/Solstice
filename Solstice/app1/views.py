@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, WatchlistCompanyserializer, InvestmentSerializer, TransactionSerializer
+from .serializers import UserSerializer, WatchlistCompanyserializer, InvestmentSerializer, TransactionSerializer, PortfolioPerformanceSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
@@ -254,7 +254,7 @@ def populate_company_table(request):
             return Response({"error":"Failed to add company"},status=status.HTTP_400_BAD_REQUEST)
         
 
-## Tracking portfolio performance
+## Tracking portfolio performance for all users using cron job
 
 @api_view(["GET", "POST"])
 @permission_classes([AllowAny])
@@ -294,3 +294,25 @@ def portfolio_performance(request):
     else:
         return Response({"message": "POST request for the portfolio performance route is not implemented"}, status=status.HTTP_200_OK)
 
+
+
+
+## Retrieving portfolio performance 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def portfolio_performance_user(request):
+    if request.method == "GET":
+        try:
+            user = request.user
+            portfolio = Portfolio.objects.get(user = user)
+            performance = Portfolio_performance.objects.filter(portfolio = portfolio)
+
+            serializer = PortfolioPerformanceSerializer(performance, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Portfolio.DoesNotExist:
+            return Response({"error":"Portfolio not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error":"Failed to get portfolio performance"},status=status.HTTP_400_BAD_REQUEST)
