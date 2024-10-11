@@ -316,3 +316,47 @@ def portfolio_performance_user(request):
         except Exception as e:
             print(e)
             return Response({"error":"Failed to get portfolio performance"},status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+## Updated investment function
+
+from decimal import Decimal
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_investment(request):
+    if request.method == "POST":
+        username = request.user.username
+        ticker = request.data["ticker"]
+        quantity = request.data["quantity"]
+        try:
+    
+            quantity = int(quantity)
+
+            user = User.objects.get(username=username)
+            company = Company.objects.get(ticker=ticker)
+            portfolio = Portfolio.objects.get(user=user)
+            investment = Investment.objects.filter(portfolio=portfolio)
+
+            for inv in investment:
+                if inv.company.ticker == ticker:
+                    inv.quantity += quantity
+                
+                    current_purchase_price = Decimal(finnhub_client.quote(ticker)["c"]) * Decimal(quantity)
+                    
+                    inv.purchase_price += current_purchase_price
+                    
+                    inv.save()
+                    return Response({"message": "Updated investment in portfolio"}, status=status.HTTP_201_CREATED)
+        except Investment.DoesNotExist:
+            return Response({"error": "Investment not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Company.DoesNotExist:
+            return Response({"error": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Portfolio.DoesNotExist:
+            return Response({"error": "Portfolio not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(e)
+            return Response({"error": "Failed to update investment"}, status=status.HTTP_400_BAD_REQUEST)
