@@ -325,6 +325,12 @@ def portfolio_performance_user(request):
 
 from decimal import Decimal
 
+from decimal import Decimal
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def update_investment(request):
@@ -333,26 +339,27 @@ def update_investment(request):
         ticker = request.data["ticker"]
         quantity = request.data["quantity"]
         try:
-    
+            # Convert quantity to integer
             quantity = int(quantity)
 
             user = User.objects.get(username=username)
             company = Company.objects.get(ticker=ticker)
             portfolio = Portfolio.objects.get(user=user)
-            investment = Investment.objects.filter(portfolio=portfolio)
+            investment = Investment.objects.filter(portfolio=portfolio, company=company).first()
 
-            for inv in investment:
-                if inv.company.ticker == ticker:
-                    inv.quantity += quantity
-                
-                    current_purchase_price = Decimal(finnhub_client.quote(ticker)["c"]) * Decimal(quantity)
-                    
-                    inv.purchase_price += current_purchase_price
-                    
-                    inv.save()
-                    return Response({"message": "Updated investment in portfolio"}, status=status.HTTP_201_CREATED)
-        except Investment.DoesNotExist:
-            return Response({"error": "Investment not found"}, status=status.HTTP_404_NOT_FOUND)
+            if investment:
+                # If investment exists, update it
+                investment.quantity += quantity
+                current_purchase_price = Decimal(finnhub_client.quote(ticker)["c"]) * Decimal(quantity)
+                investment.purchase_price += current_purchase_price
+                investment.save()
+                return Response({"message": "Updated investment in portfolio"}, status=status.HTTP_201_CREATED)
+            else:
+                # If investment does not exist, create a new one
+                purchase_price = Decimal(finnhub_client.quote(ticker)["c"]) * Decimal(quantity)
+                new_investment = Investment.objects.create(portfolio=portfolio, company=company, quantity=quantity, purchase_price=purchase_price)
+                return Response({"message": "Added new investment to portfolio"}, status=status.HTTP_201_CREATED)
+
         except Company.DoesNotExist:
             return Response({"error": "Company not found"}, status=status.HTTP_404_NOT_FOUND)
         except Portfolio.DoesNotExist:
