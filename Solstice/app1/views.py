@@ -12,6 +12,7 @@ import finnhub
 import dotenv 
 import os
 from dotenv import load_dotenv
+from decimal import Decimal
 
 load_dotenv()
 finnhub_client = finnhub.Client(os.getenv("API_KEY"))
@@ -322,14 +323,6 @@ def portfolio_performance_user(request):
 
 
 ## Updated investment function
-
-from decimal import Decimal
-
-from decimal import Decimal
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
