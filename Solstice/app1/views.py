@@ -13,6 +13,8 @@ import dotenv
 import os
 from dotenv import load_dotenv
 from decimal import Decimal
+import requests
+url = 'http://localhost:8000/portfolio-performance/'
 
 load_dotenv()
 finnhub_client = finnhub.Client(os.getenv("API_KEY"))
@@ -150,7 +152,9 @@ def add_investment(request):
             portfolio = Portfolio.objects.get(user = user)
             purchase_price = finnhub_client.quote(ticker)["c"] * float(quantity)
             investment = Investment.objects.create(portfolio = portfolio, company = company, quantity = quantity, purchase_price = purchase_price)
+            response = requests.get(url)
             return Response({"message":f"Added investment to portfolio"}, status=status.HTTP_201_CREATED)
+        
         except Company.DoesNotExist:
             return Response({"error":"Company not found"},status=status.HTTP_404_NOT_FOUND)
         except Portfolio.DoesNotExist:
@@ -193,10 +197,12 @@ def transaction(request):
             if transaction_type == "BUY":
                 price = finnhub_client.quote(ticker)["c"] * float(quantity)
                 transaction = Transactions.objects.create(portfolio = portfolio, company = company, transction_type = transaction_type, quantity = quantity, price = price)
+                response = requests.get(url)
                 return Response({"message":f"Added transaction to portfolio"}, status=status.HTTP_201_CREATED)
             elif transaction_type == "SELL":
                 price = finnhub_client.quote(ticker)["c"] * float(quantity)
                 transaction = Transactions.objects.create(portfolio = portfolio, company = company, transction_type = transaction_type, quantity = quantity, price = price)
+                response = requests.get(url)
                 return Response({"message":f"Added transaction to portfolio"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"error":"Invalid transaction type"},status=status.HTTP_400_BAD_REQUEST)
