@@ -357,6 +357,7 @@ def update_investment(request):
                 # If investment does not exist, create a new one
                 purchase_price = Decimal(finnhub_client.quote(ticker)["c"]) * Decimal(quantity)
                 new_investment = Investment.objects.create(portfolio=portfolio, company=company, quantity=quantity, purchase_price=purchase_price)
+                response = requests.get(url)
                 return Response({"message": "Added new investment to portfolio"}, status=status.HTTP_201_CREATED)
 
         except Company.DoesNotExist:
